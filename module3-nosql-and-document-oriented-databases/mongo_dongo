@@ -1,0 +1,71 @@
+import os
+from dotenv import load_dotenv
+import pymongo
+load_dotenv()
+DB_USER = os.getenv("MONGO_USER", default="OOPS")
+DB_PASSWORD = os.getenv("MONGO_PASSWORD", default="OOPS")
+CLUSTER_NAME = os.getenv("MONGO_CLUSTER_NAME", default="OOPS")
+connection_uri = f"mongodb+srv://{DB_USER}:{DB_PASSWORD}@{CLUSTER_NAME}.mongodb.net/test?retryWrites=true&w=majority"
+print("----------------")
+print("URI:", connection_uri)
+client = pymongo.MongoClient("mongodb+srv://shuulaces:Godlikefigure1@cluster0-pse9l.gcp.mongodb.net/shuulaces?retryWrites=true&w=majority")
+print("----------------")
+print("CLIENT:", type(client), client)
+print("DATABASES:", client.list_database_names())
+db = client.my_test_database # "test_database" or whatever you want to call it
+print("----------------")
+print("DB:", type(db), db)
+print("COLLECTIONS:", db.list_collection_names())
+collection = db.pokemon_test # "pokemon_test" or whatever you want to call it
+print("----------------")
+print("COLLECTION:", type(collection), collection)
+print("DOCUMENTS COUNT:", collection.count_documents({}))
+for doc in collection.find({"level": {"$gt": 20}}):
+    print(doc)
+# INSERT ONE
+collection.insert_one({
+    "name": "Pikachu",
+    "level": 30,
+    "exp": 76000000000,
+    "hp": 400,
+    "parents": ["Pikachu A", "Raichu"],
+    "other_attr": {
+        "a":1,
+        "b":2,
+        "c":3
+    }
+})
+print("DOCUMENTS COUNT:", collection.count_documents({}))
+print("PIKA COUNT:", collection.count_documents({"name": "Pikachu"}))
+# INSERT MANY
+bulbasaur = {
+   "name": "Bulbasaur",
+   "type": "grass",
+   "moves":["Leech Seed", "Solar Beam"]
+}
+eevee = {
+    "name": "Eevee",
+    "level": 40,
+    "exp": 7500,
+    "hp": 120,
+}
+chansey = {
+    "name": "Chansey",
+    "Egg Group": "Fairy",
+    "Pokedex Color": "Pink",
+}
+jirachi = {
+    "name": "Jirachi",
+    "Egg Group": "Undiscovered",
+    "Pokedex Color": "Yellow",
+}
+snorlax = {}
+charizard = {
+    "lvl": 100,
+    "power": "UNLIMITED",
+    "favorite item": "Pokeflute"
+}
+team = [bulbasaur, eevee, chansey, jirachi, snorlax, charizard]
+#> list of dict
+collection.insert_many(team)
+print("DOCUMENTS COUNT:", collection.count_documents({}))
